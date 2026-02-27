@@ -16,7 +16,7 @@ export default function FeesPage() {
       <div className="feature-card p-6">
         <div className="flex items-center gap-3 mb-4">
           <IndianRupee className="w-5 h-5 text-primary" />
-          <h3 className="font-grotesk font-semibold text-lg">Fee Structure 2025-26</h3>
+          <h3 className="font-grotesk font-semibold text-lg">Fee Structure 2026-27</h3>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">

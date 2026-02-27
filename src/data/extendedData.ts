@@ -56,11 +56,11 @@ export const extendedFaculty = [
 ];
 
 export const internships = [
-  { id: 1, title: 'Frontend Developer Intern', company: 'Google', domain: 'Web Development', duration: '3 months', stipend: '₹40,000/month', deadline: 'Mar 15, 2025', status: 'open' as const },
-  { id: 2, title: 'ML Research Intern', company: 'Microsoft', domain: 'AI/ML', duration: '6 months', stipend: '₹50,000/month', deadline: 'Mar 20, 2025', status: 'open' as const },
-  { id: 3, title: 'Backend Developer Intern', company: 'Amazon', domain: 'Backend', duration: '3 months', stipend: '₹35,000/month', deadline: 'Feb 28, 2025', status: 'closed' as const },
-  { id: 4, title: 'Data Analyst Intern', company: 'Deloitte', domain: 'Data Science', duration: '4 months', stipend: '₹30,000/month', deadline: 'Apr 5, 2025', status: 'open' as const },
-  { id: 5, title: 'UI/UX Design Intern', company: 'Accenture', domain: 'Design', duration: '3 months', stipend: '₹25,000/month', deadline: 'Mar 30, 2025', status: 'open' as const },
+  { id: 1, title: 'Frontend Developer Intern', company: 'Google', domain: 'Web Development', duration: '3 months', stipend: '₹40,000/month', deadline: 'Mar 15, 2026', status: 'open' as const },
+  { id: 2, title: 'ML Research Intern', company: 'Microsoft', domain: 'AI/ML', duration: '6 months', stipend: '₹50,000/month', deadline: 'Mar 20, 2026', status: 'open' as const },
+  { id: 3, title: 'Backend Developer Intern', company: 'Amazon', domain: 'Backend', duration: '3 months', stipend: '₹35,000/month', deadline: 'Feb 28, 2026', status: 'closed' as const },
+  { id: 4, title: 'Data Analyst Intern', company: 'Deloitte', domain: 'Data Science', duration: '4 months', stipend: '₹30,000/month', deadline: 'Apr 5, 2026', status: 'open' as const },
+  { id: 5, title: 'UI/UX Design Intern', company: 'Accenture', domain: 'Design', duration: '3 months', stipend: '₹25,000/month', deadline: 'Mar 30, 2026', status: 'open' as const },
 ];
 
 export const insightsData = {
@@ -114,8 +114,8 @@ export const searchableContent = [
   { type: 'Faculty', title: 'Dr. Suresh Kumar - Head of CIVIL', path: '/faculty/4' },
   { type: 'Notice', title: 'Semester Exam Schedule Released', path: '/' },
   { type: 'Notice', title: 'Campus Placement Drive - TCS & Infosys', path: '/placements' },
-  { type: 'Notice', title: 'Hackathon 2025 - Register Now', path: '/' },
-  { type: 'Event', title: 'TechFest 2025', path: '/gallery' },
+  { type: 'Notice', title: 'Hackathon 2026 - Register Now', path: '/' },
+  { type: 'Event', title: 'TechFest 2026', path: '/gallery' },
   { type: 'Event', title: 'Annual Sports Meet', path: '/gallery' },
   { type: 'Alumni', title: 'Arjun Verma - Google', path: '/placements' },
   { type: 'Alumni', title: 'Sneha Reddy - Microsoft', path: '/placements' },

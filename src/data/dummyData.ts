@@ -114,11 +114,11 @@ export const galleryImages = [
 ];
 
 export const notices = [
-  { id: 1, title: 'Semester Exam Schedule Released', date: 'Feb 20, 2025', category: 'Academic', urgent: true },
-  { id: 2, title: 'Campus Placement Drive - TCS & Infosys', date: 'Feb 22, 2025', category: 'Placement', urgent: true },
-  { id: 3, title: 'Annual Sports Meet Registration Open', date: 'Feb 18, 2025', category: 'Sports', urgent: false },
-  { id: 4, title: 'Hackathon 2025 - Register Now', date: 'Feb 15, 2025', category: 'Events', urgent: false },
-  { id: 5, title: 'Fee Payment Deadline Extended to March 5', date: 'Feb 14, 2025', category: 'Finance', urgent: true },
+  { id: 1, title: 'Semester Exam Schedule Released', date: 'Feb 20, 2026', category: 'Academic', urgent: true },
+  { id: 2, title: 'Campus Placement Drive - TCS & Infosys', date: 'Feb 22, 2026', category: 'Placement', urgent: true },
+  { id: 3, title: 'Annual Sports Meet Registration Open', date: 'Feb 18, 2026', category: 'Sports', urgent: false },
+  { id: 4, title: 'Hackathon 2026 - Register Now', date: 'Feb 15, 2026', category: 'Events', urgent: false },
+  { id: 5, title: 'Fee Payment Deadline Extended to March 5', date: 'Feb 14, 2026', category: 'Finance', urgent: true },
 ];
 
 export const chatMessages: { id: number; sender: 'bot' | 'user'; message: string }[] = [

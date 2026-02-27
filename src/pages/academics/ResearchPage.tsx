@@ -11,7 +11,7 @@ const publications = [
 const patents = [
   { title: 'Automated Crop Disease Detection using Computer Vision', number: 'IN202441023456', year: 2024, status: 'Granted' },
   { title: 'IoT-based Water Quality Monitoring Device', number: 'IN202341098765', year: 2023, status: 'Granted' },
-  { title: 'AI-Powered Student Performance Predictor', number: 'IN202541001234', year: 2025, status: 'Filed' },
+  { title: 'AI-Powered Student Performance Predictor', number: 'IN202641001234', year: 2026, status: 'Filed' },
 ];
 
 const conferences = [

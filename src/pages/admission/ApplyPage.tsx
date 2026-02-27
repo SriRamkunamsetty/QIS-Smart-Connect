@@ -20,7 +20,7 @@ export default function ApplyPage() {
           </div>
           <h2 className="font-grotesk font-bold text-3xl mb-3">Application Submitted!</h2>
           <p className="text-muted-foreground mb-8">
-            Your application has been received. Application ID: <span className="text-primary font-semibold">QISCET-2025-{Math.floor(Math.random() * 9000) + 1000}</span>
+            Your application has been received. Application ID: <span className="text-primary font-semibold">QISCET-2026-{Math.floor(Math.random() * 9000) + 1000}</span>
           </p>
           <button onClick={() => { setSubmitted(false); setCurrentStep(0); }} className="btn-primary">Submit Another</button>
         </div>

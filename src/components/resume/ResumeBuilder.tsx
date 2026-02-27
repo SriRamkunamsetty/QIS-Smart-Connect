@@ -372,7 +372,7 @@ export default function ResumeBuilderPage() {
                 const isTextarea = key !== 'skills';
                 const placeholders: Record<SectionKey, string> = {
                   summary: 'Brief summary about yourself...',
-                  education: 'B.Tech CSE, QISCET (2021-2025)\n10th - 95%, 12th - 92%',
+                  education: 'B.Tech CSE, QISCET (2022-2026)\n10th - 95%, 12th - 92%',
                   experience: 'Company Name - Role\nJan 2024 - Present',
                   skills: 'React, TypeScript, Python, Machine Learning',
                   projects: 'Project Name - Description\nTech stack used',

@@ -15,7 +15,7 @@ export default function AdmissionLayout() {
       <Breadcrumb />
       <div className="container mx-auto pt-4">
         <div className="text-center mb-10">
-          <h1 className="section-title mb-3">Admissions <span className="gradient-text">2025</span></h1>
+          <h1 className="section-title mb-3">Admissions <span className="gradient-text">2026</span></h1>
           <p className="section-subtitle">Begin your journey at QIS College of Engineering and Technology</p>
         </div>
 
