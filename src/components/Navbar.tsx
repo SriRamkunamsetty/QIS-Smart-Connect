@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, GraduationCap, Search, ChevronDown } from 'lucide-react';
+import { Menu, X, GraduationCap, Search, ChevronDown, CloudSun } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import ThemeToggle from './ThemeToggle';
 import GlobalSearch from './search/GlobalSearch';
+import WeatherWidget from './weather/WeatherWidget';
 
 const navLinks = [
   { label: 'Home', path: '/' },
@@ -30,7 +31,7 @@ export default function Navbar() {
   const [moreOpen, setMoreOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const location = useLocation();
-  const { user, logout } = useAuth();
+  const { user, logout, isAuthenticated } = useAuth();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -48,12 +49,17 @@ export default function Navbar() {
     return location.pathname.startsWith(path);
   };
 
+  const getDashboardPath = () => {
+    if (user?.role === 'Admin') return '/admin-dashboard';
+    if (user?.role === 'Faculty') return '/faculty-dashboard';
+    return '/student-dashboard';
+  };
+
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          scrolled ? 'glass-card shadow-card py-3' : 'bg-transparent py-5'
-        }`}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'glass-card shadow-card py-3' : 'bg-transparent py-5'
+          }`}
       >
         <div className="container mx-auto flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2.5 group">
@@ -93,13 +99,14 @@ export default function Navbar() {
           </nav>
 
           <div className="hidden lg:flex items-center gap-3">
+            <WeatherWidget />
             <button onClick={() => setSearchOpen(true)} className="p-2 rounded-xl border border-border hover:bg-muted transition-colors" title="Search (Ctrl+K)">
               <Search className="w-4 h-4" />
             </button>
             <ThemeToggle />
-            {user ? (
+            {isAuthenticated ? (
               <div className="flex items-center gap-3">
-                <Link to={user.role === 'admin' ? '/admin-dashboard' : user.role === 'faculty' ? '/faculty/dashboard' : '/student-dashboard'} className="btn-outline text-xs px-4 py-2">Dashboard</Link>
+                <Link to={getDashboardPath()} className="btn-outline text-xs px-4 py-2">Dashboard</Link>
                 <button onClick={logout} className="text-sm text-muted-foreground hover:text-foreground transition-colors">Logout</button>
               </div>
             ) : (
@@ -121,6 +128,9 @@ export default function Navbar() {
         {menuOpen && (
           <div className="lg:hidden glass-card border-t border-border mt-2 mx-4 rounded-2xl p-5 animate-fade-in">
             <nav className="flex flex-col gap-1">
+              <div className="mb-4">
+                <WeatherWidget />
+              </div>
               {navLinks.map(link =>
                 link.children ? (
                   <div key={link.label}>
@@ -138,9 +148,9 @@ export default function Navbar() {
                 )
               )}
               <div className="pt-3 border-t border-border mt-2">
-                {user ? (
+                {isAuthenticated ? (
                   <>
-                    <Link to={user.role === 'admin' ? '/admin-dashboard' : user.role === 'faculty' ? '/faculty/dashboard' : '/student-dashboard'} className="block px-4 py-3 rounded-xl text-sm font-medium bg-primary/10 text-primary mb-2">Dashboard</Link>
+                    <Link to={getDashboardPath()} className="block px-4 py-3 rounded-xl text-sm font-medium bg-primary/10 text-primary mb-2">Dashboard</Link>
                     <button onClick={logout} className="w-full text-left px-4 py-3 rounded-xl text-sm text-muted-foreground hover:bg-muted">Logout</button>
                   </>
                 ) : (

@@ -1,0 +1,51 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.admin == true;
+    }
+
+    function isFaculty() {
+      return isSignedIn() && request.auth.token.faculty == true;
+    }
+
+    function isSameUser(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // User profiles
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin() || isSameUser(userId);
+    }
+
+    // Student specific data
+    match /students/{studentId} {
+      allow read: if isFaculty() || isAdmin() || isSameUser(studentId);
+      allow write: if isAdmin() || (isFaculty() && request.auth.token.branch == resource.data.branch);
+    }
+
+    // Admissions and branch rules
+    match /admissions/{branchId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Analytics and settings
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    // Default deny
+    match /{document=**} {
+      allow read, write: if isAdmin();
+    }
+  }
+}

@@ -1,19 +1,62 @@
 import { useState } from 'react';
-import { Check, Upload, ChevronRight } from 'lucide-react';
+import { Check, Upload, ChevronRight, Loader2 } from 'lucide-react';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '../firebaseConfig';
+import { useAuth } from '../context/AuthContext';
 import EligibilityChecker from '@/components/eligibility/EligibilityChecker';
 import FeeCalculator from '@/components/fee/FeeCalculator';
 
 const steps = ['Personal Details', 'Academic Details', 'Documents', 'Review & Submit'];
 
 export default function Admission() {
+  const { user } = useAuth();
   const [currentStep, setCurrentStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [applicationId, setApplicationId] = useState('');
+
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    dob: '',
+    phone: '',
+    email: user?.email || '',
+    city: '',
+    school: '',
+    marks10: '',
+    marks12: '',
+    entranceScore: '',
+    department: 'Computer Science & Engineering'
+  });
 
   const progress = ((currentStep) / (steps.length - 1)) * 100;
 
-  const handleNext = () => {
-    if (currentStep < steps.length - 1) setCurrentStep(s => s + 1);
-    else setSubmitted(true);
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleNext = async () => {
+    if (currentStep < steps.length - 1) {
+      setCurrentStep(s => s + 1);
+    } else {
+      // Final Submission
+      setLoading(true);
+      try {
+        const docRef = await addDoc(collection(db, 'applications'), {
+          userId: user?.uid || 'anonymous',
+          status: 'Pending',
+          data: formData,
+          submissionDate: serverTimestamp(),
+          branch: formData.department
+        });
+        setApplicationId(docRef.id);
+        setSubmitted(true);
+      } catch (error) {
+        console.error("Error submitting application:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
   };
 
   if (submitted) {
@@ -26,7 +69,7 @@ export default function Admission() {
           <h2 className="font-grotesk font-bold text-3xl mb-3">Application Submitted!</h2>
           <p className="text-muted-foreground mb-8">
             Your application has been received. We'll contact you within 3-5 business days.
-            Application ID: <span className="text-primary font-semibold">QISCET-2025-{Math.floor(Math.random() * 9000) + 1000}</span>
+            Application ID: <span className="text-primary font-mono font-semibold">{applicationId}</span>
           </p>
           <button onClick={() => { setSubmitted(false); setCurrentStep(0); }} className="btn-primary">
             Submit Another Application
@@ -50,13 +93,12 @@ export default function Admission() {
             {steps.map((step, i) => (
               <div key={step} className="flex flex-col items-center gap-1 flex-1">
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${
-                    i < currentStep
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${i < currentStep
                       ? 'bg-primary text-primary-foreground'
                       : i === currentStep
-                      ? 'bg-gradient-primary text-white shadow-glow scale-110'
-                      : 'bg-muted text-muted-foreground'
-                  }`}
+                        ? 'bg-gradient-primary text-white shadow-glow scale-110'
+                        : 'bg-muted text-muted-foreground'
+                    }`}
                 >
                   {i < currentStep ? <Check className="w-4 h-4" /> : i + 1}
                 </div>
@@ -81,17 +123,19 @@ export default function Admission() {
           {currentStep === 0 && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               {[
-                { label: 'First Name', placeholder: 'John', type: 'text' },
-                { label: 'Last Name', placeholder: 'Doe', type: 'text' },
-                { label: 'Date of Birth', placeholder: '', type: 'date' },
-                { label: 'Phone Number', placeholder: '+91 XXXXX XXXXX', type: 'tel' },
-                { label: 'Email Address', placeholder: 'john@example.com', type: 'email' },
-                { label: 'City', placeholder: 'Bangalore', type: 'text' },
+                { label: 'First Name', placeholder: 'John', type: 'text', key: 'firstName' },
+                { label: 'Last Name', placeholder: 'Doe', type: 'text', key: 'lastName' },
+                { label: 'Date of Birth', placeholder: '', type: 'date', key: 'dob' },
+                { label: 'Phone Number', placeholder: '+91 XXXXX XXXXX', type: 'tel', key: 'phone' },
+                { label: 'Email Address', placeholder: 'john@example.com', type: 'email', key: 'email' },
+                { label: 'City', placeholder: 'Bangalore', type: 'text', key: 'city' },
               ].map(field => (
                 <div key={field.label}>
                   <label className="block text-sm font-medium mb-2">{field.label}</label>
                   <input
                     type={field.type}
+                    value={(formData as any)[field.key]}
+                    onChange={(e) => handleInputChange(field.key, e.target.value)}
                     placeholder={field.placeholder}
                     className="w-full px-4 py-3 rounded-xl bg-muted border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none text-sm transition-all"
                   />
@@ -103,15 +147,17 @@ export default function Admission() {
           {currentStep === 1 && (
             <div className="space-y-5">
               {[
-                { label: 'Previous School / College', placeholder: 'Delhi Public School' },
-                { label: '10th Marks (%)', placeholder: '95%' },
-                { label: '12th / Diploma Marks (%)', placeholder: '92%' },
-                { label: 'Entrance Exam Score (JEE/CET)', placeholder: 'JEE Mains: 180' },
+                { label: 'Previous School / College', placeholder: 'Delhi Public School', key: 'school' },
+                { label: '10th Marks (%)', placeholder: '95%', key: 'marks10' },
+                { label: '12th / Diploma Marks (%)', placeholder: '92%', key: 'marks12' },
+                { label: 'Entrance Exam Score (JEE/CET)', placeholder: 'JEE Mains: 180', key: 'entranceScore' },
               ].map(field => (
                 <div key={field.label}>
                   <label className="block text-sm font-medium mb-2">{field.label}</label>
                   <input
                     type="text"
+                    value={(formData as any)[field.key]}
+                    onChange={(e) => handleInputChange(field.key, e.target.value)}
                     placeholder={field.placeholder}
                     className="w-full px-4 py-3 rounded-xl bg-muted border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none text-sm transition-all"
                   />
@@ -119,7 +165,11 @@ export default function Admission() {
               ))}
               <div>
                 <label className="block text-sm font-medium mb-2">Preferred Department</label>
-                <select className="w-full px-4 py-3 rounded-xl bg-muted border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none text-sm">
+                <select
+                  value={formData.department}
+                  onChange={(e) => handleInputChange('department', e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl bg-muted border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none text-sm"
+                >
                   <option>Computer Science & Engineering</option>
                   <option>Electronics & Communication</option>
                   <option>Mechanical Engineering</option>
@@ -149,10 +199,10 @@ export default function Admission() {
             <div className="space-y-4">
               <div className="glass-card rounded-xl p-5 space-y-3">
                 {[
-                  { label: 'Name', value: 'John Doe' },
-                  { label: 'Department', value: 'Computer Science & Engineering' },
-                  { label: 'Entrance Score', value: 'JEE Mains: 180' },
-                  { label: '12th Marks', value: '92%' },
+                  { label: 'Name', value: `${formData.firstName} ${formData.lastName}` },
+                  { label: 'Department', value: formData.department },
+                  { label: 'Entrance Score', value: formData.entranceScore },
+                  { label: '12th Marks', value: formData.marks12 },
                 ].map(item => (
                   <div key={item.label} className="flex justify-between py-2 border-b border-border last:border-0">
                     <span className="text-sm text-muted-foreground">{item.label}</span>
@@ -173,14 +223,15 @@ export default function Admission() {
           <div className="flex justify-between mt-8">
             <button
               onClick={() => setCurrentStep(s => Math.max(0, s - 1))}
-              disabled={currentStep === 0}
+              disabled={currentStep === 0 || loading}
               className="btn-outline disabled:opacity-30"
             >
               Back
             </button>
-            <button onClick={handleNext} className="btn-primary">
+            <button onClick={handleNext} disabled={loading} className="btn-primary">
+              {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
               {currentStep === steps.length - 1 ? 'Submit Application' : 'Next Step'}
-              <ChevronRight className="w-4 h-4" />
+              {!loading && <ChevronRight className="w-4 h-4" />}
             </button>
           </div>
         </div>

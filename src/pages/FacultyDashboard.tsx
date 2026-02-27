@@ -1,19 +1,22 @@
-import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Users, BarChart3, LogOut, AlertTriangle } from 'lucide-react';
+import { collection, query, where, onSnapshot } from 'firebase/firestore';
+import { db } from '../firebaseConfig';
 import PerformanceRiskPanel from '@/components/risk/PerformanceRiskPanel';
 
 interface Student {
   id: string;
   name: string;
-  roll_number: string;
+  rollNumber: string;
   branch: string;
-  academic_year: string;
+  academicYear: string;
   section: string;
-  attendance_percent: number;
+  attendance: number;
   cgpa: number;
+  riskLevel?: string;
+  riskScore?: number;
 }
 
 export default function FacultyDashboard() {
@@ -28,21 +31,37 @@ export default function FacultyDashboard() {
     if (!isAuthenticated) navigate('/login');
   }, [isAuthenticated, navigate]);
 
-  const fetchStudents = useCallback(async () => {
+  useEffect(() => {
+    if (!user?.uid) return;
+
     setLoading(true);
-    let query = supabase.from('students').select('*').order('name');
-    if (branchFilter) query = query.eq('branch', branchFilter);
-    if (yearFilter) query = query.eq('academic_year', yearFilter);
-    const { data } = await query;
-    setStudents((data || []) as Student[]);
-    setLoading(false);
-  }, [branchFilter, yearFilter]);
 
-  useEffect(() => { fetchStudents(); }, [fetchStudents]);
+    // Filter by branch if it's set in state or from the faculty's assigned branch
+    const effectiveBranch = branchFilter || user.branch;
 
-  const shortageStudents = students.filter(s => (s.attendance_percent || 0) < 75);
+    let q = query(collection(db, 'students'));
+    if (effectiveBranch) {
+      q = query(q, where('branch', '==', effectiveBranch));
+    }
+    if (yearFilter) {
+      q = query(q, where('academicYear', '==', yearFilter));
+    }
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const studentList = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      } as Student));
+      setStudents(studentList);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [user?.uid, branchFilter, yearFilter, user.branch]);
+
+  const shortageStudents = students.filter(s => (s.attendance || 0) < 75);
   const avgCGPA = students.length ? (students.reduce((a, s) => a + (s.cgpa || 0), 0) / students.length).toFixed(2) : '0';
-  const avgAttendance = students.length ? (students.reduce((a, s) => a + (s.attendance_percent || 0), 0) / students.length).toFixed(1) : '0';
+  const avgAttendance = students.length ? (students.reduce((a, s) => a + (s.attendance || 0), 0) / students.length).toFixed(1) : '0';
 
   // CGPA distribution
   const cgpaRanges = ['0-4', '4-6', '6-7', '7-8', '8-9', '9-10'];
@@ -58,7 +77,7 @@ export default function FacultyDashboard() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="font-grotesk font-bold text-2xl">Faculty Dashboard</h1>
-            <p className="text-sm text-muted-foreground">Welcome, {user?.name || 'Faculty'}</p>
+            <p className="text-sm text-muted-foreground">Welcome, {user?.name || 'Faculty'} · Branch: <span className="text-primary font-semibold">{user?.branch || 'General'}</span></p>
           </div>
           <button onClick={() => { logout(); navigate('/'); }} className="btn-outline text-sm">
             <LogOut className="w-4 h-4" /> Logout
@@ -83,7 +102,7 @@ export default function FacultyDashboard() {
         {/* Filters */}
         <div className="flex flex-wrap gap-3 mb-6">
           <select value={branchFilter} onChange={e => setBranchFilter(e.target.value)} className="px-3 py-2 rounded-xl bg-muted border border-border text-sm">
-            <option value="">All Branches</option>
+            <option value="">{user?.branch ? `Only My Branch (${user.branch})` : 'All Branches'}</option>
             {['CSE', 'ECE', 'MECH', 'CIVIL', 'EEE', 'CSD', 'AI&ML', 'IT'].map(b => <option key={b} value={b}>{b}</option>)}
           </select>
           <select value={yearFilter} onChange={e => setYearFilter(e.target.value)} className="px-3 py-2 rounded-xl bg-muted border border-border text-sm">
@@ -133,10 +152,10 @@ export default function FacultyDashboard() {
                   <tbody>
                     {shortageStudents.slice(0, 10).map(s => (
                       <tr key={s.id} className="border-b border-border last:border-0">
-                        <td className="px-3 py-2 font-mono text-xs text-primary">{s.roll_number}</td>
+                        <td className="px-3 py-2 font-mono text-xs text-primary">{s.rollNumber}</td>
                         <td className="px-3 py-2">{s.name}</td>
                         <td className="px-3 py-2 text-muted-foreground">{s.branch}</td>
-                        <td className="px-3 py-2 text-destructive font-semibold">{s.attendance_percent}%</td>
+                        <td className="px-3 py-2 text-destructive font-semibold">{s.attendance}%</td>
                       </tr>
                     ))}
                   </tbody>
@@ -163,7 +182,7 @@ export default function FacultyDashboard() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border">
-                  {['Roll No', 'Name', 'Branch', 'Year', 'Section', 'Attendance', 'CGPA'].map(h => (
+                  {['Roll No', 'Name', 'Branch', 'Year', 'Section', 'Attendance', 'CGPA', 'Risk'].map(h => (
                     <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">{h}</th>
                   ))}
                 </tr>
@@ -171,17 +190,25 @@ export default function FacultyDashboard() {
               <tbody>
                 {students.map(s => (
                   <tr key={s.id} className="border-b border-border last:border-0 hover:bg-muted/50">
-                    <td className="px-4 py-3 font-mono text-xs text-primary">{s.roll_number}</td>
+                    <td className="px-4 py-3 font-mono text-xs text-primary">{s.rollNumber}</td>
                     <td className="px-4 py-3 font-medium">{s.name}</td>
                     <td className="px-4 py-3 text-muted-foreground">{s.branch}</td>
-                    <td className="px-4 py-3 text-xs text-muted-foreground">{s.academic_year}</td>
+                    <td className="px-4 py-3 text-xs text-muted-foreground">{s.academicYear}</td>
                     <td className="px-4 py-3 text-muted-foreground">{s.section}</td>
                     <td className="px-4 py-3">
-                      <span className={`text-xs font-medium ${(s.attendance_percent || 0) < 75 ? 'text-destructive' : 'text-green-500'}`}>
-                        {s.attendance_percent || 0}%
+                      <span className={`text-xs font-medium ${(s.attendance || 0) < 75 ? 'text-destructive' : 'text-green-500'}`}>
+                        {s.attendance || 0}%
                       </span>
                     </td>
                     <td className="px-4 py-3 font-semibold">{s.cgpa || 0}</td>
+                    <td className="px-4 py-3">
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${s.riskLevel === 'High Risk' ? 'bg-rose-500/10 text-rose-500' :
+                          s.riskLevel === 'Moderate Risk' ? 'bg-amber-500/10 text-amber-500' :
+                            'bg-green-500/10 text-green-500'
+                        }`}>
+                        {s.riskLevel || 'Safe'}
+                      </span>
+                    </td>
                   </tr>
                 ))}
               </tbody>

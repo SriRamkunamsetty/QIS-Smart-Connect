@@ -1,12 +1,24 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Bell, Users, Image, TrendingUp, LogOut,
-  Plus, BarChart3, Menu, X, Search, Edit, Trash2, UserPlus, Filter, Download
+  Plus, BarChart3, Menu, X, Search, Edit, Trash2, UserPlus, Filter, Download, Loader2
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import {
+  collection,
+  query,
+  onSnapshot,
+  doc,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  serverTimestamp,
+  orderBy,
+  where
+} from 'firebase/firestore';
+import { db } from '../firebaseConfig';
 
 const sidebarItems = [
   { id: 'overview', label: 'Overview', icon: LayoutDashboard },
@@ -24,21 +36,21 @@ const categories = ['General', 'OBC', 'SC', 'ST', 'EWS'];
 interface Student {
   id: string;
   name: string;
-  roll_number: string;
+  rollNumber: string;
   branch: string;
-  academic_year: string;
+  academicYear: string;
   section: string;
   category: string;
   email: string;
   phone: string;
-  attendance_percent: number;
+  attendance: number;
   cgpa: number;
 }
 
 const emptyStudent = {
-  name: '', roll_number: '', branch: 'CSE', academic_year: '2024-2028',
+  name: '', rollNumber: '', branch: 'CSE', academicYear: '2024-2028',
   section: 'A', category: 'General', email: '', phone: '',
-  attendance_percent: 0, cgpa: 0,
+  attendance: 0, cgpa: 0,
 };
 
 export default function AdminDashboard() {
@@ -60,64 +72,69 @@ export default function AdminDashboard() {
     if (!isAuthenticated) navigate('/login');
   }, [isAuthenticated, navigate]);
 
-  const fetchStudents = useCallback(async () => {
-    setLoadingStudents(true);
-    let query = supabase.from('students').select('*').order('created_at', { ascending: false });
-    if (filters.branch) query = query.eq('branch', filters.branch);
-    if (filters.year) query = query.eq('academic_year', filters.year);
-    if (filters.category) query = query.eq('category', filters.category);
-    if (filters.search) query = query.or(`name.ilike.%${filters.search}%,roll_number.ilike.%${filters.search}%`);
-
-    const { data, error } = await query;
-    if (error) {
-      toast({ title: 'Error loading students', description: error.message, variant: 'destructive' });
-    } else {
-      setStudents((data || []) as Student[]);
-    }
-    setLoadingStudents(false);
-  }, [filters, toast]);
-
   useEffect(() => {
-    if (activeTab === 'students') fetchStudents();
-  }, [activeTab, fetchStudents]);
+    if (activeTab === 'students' || activeTab === 'overview') {
+      setLoadingStudents(true);
+      let q = query(collection(db, 'students'), orderBy('rollNumber'));
+
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        const studentList = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        } as Student));
+
+        // Frontend filtering (to keep it reactive and simple for now)
+        let filtered = studentList;
+        if (filters.branch) filtered = filtered.filter(s => s.branch === filters.branch);
+        if (filters.year) filtered = filtered.filter(s => s.academicYear === filters.year);
+        if (filters.category) filtered = filtered.filter(s => s.category === filters.category);
+        if (filters.search) {
+          const s = filters.search.toLowerCase();
+          filtered = filtered.filter(st => st.name.toLowerCase().includes(s) || st.rollNumber.toLowerCase().includes(s));
+        }
+
+        setStudents(filtered);
+        setLoadingStudents(false);
+      });
+
+      return () => unsubscribe();
+    }
+  }, [activeTab, filters]);
 
   const handleSave = async () => {
-    if (!form.name || !form.roll_number) {
+    if (!form.name || !form.rollNumber) {
       toast({ title: 'Name and Roll Number are required', variant: 'destructive' });
       return;
     }
-    if (editingId) {
-      const { error } = await supabase.from('students').update({
-        name: form.name, roll_number: form.roll_number, branch: form.branch,
-        academic_year: form.academic_year, section: form.section, category: form.category,
-        email: form.email, phone: form.phone,
-        attendance_percent: form.attendance_percent, cgpa: form.cgpa,
-        updated_at: new Date().toISOString(),
-      }).eq('id', editingId);
-      if (error) { toast({ title: 'Update failed', description: error.message, variant: 'destructive' }); return; }
-      toast({ title: 'Student updated' });
-    } else {
-      const { error } = await supabase.from('students').insert({
-        name: form.name, roll_number: form.roll_number, branch: form.branch,
-        academic_year: form.academic_year, section: form.section, category: form.category,
-        email: form.email, phone: form.phone,
-        attendance_percent: form.attendance_percent, cgpa: form.cgpa,
-      });
-      if (error) { toast({ title: 'Add failed', description: error.message, variant: 'destructive' }); return; }
-      toast({ title: 'Student added' });
+
+    try {
+      if (editingId) {
+        await updateDoc(doc(db, 'students', editingId), {
+          ...form,
+          updatedAt: serverTimestamp()
+        });
+        toast({ title: 'Student updated' });
+      } else {
+        await addDoc(collection(db, 'students'), {
+          ...form,
+          createdAt: serverTimestamp()
+        });
+        toast({ title: 'Student added' });
+      }
+      setShowForm(false);
+      setEditingId(null);
+      setForm(emptyStudent);
+    } catch (error: any) {
+      toast({ title: 'Operation failed', description: error.message, variant: 'destructive' });
     }
-    setShowForm(false);
-    setEditingId(null);
-    setForm(emptyStudent);
-    fetchStudents();
   };
 
   const handleEdit = (s: Student) => {
     setForm({
-      name: s.name, roll_number: s.roll_number, branch: s.branch,
-      academic_year: s.academic_year, section: s.section || 'A',
+      name: s.name, rollNumber: s.rollNumber, branch: s.branch,
+      academicYear: s.academicYear, section: s.section || 'A',
       category: s.category || 'General', email: s.email || '',
-      phone: s.phone || '', attendance_percent: s.attendance_percent || 0,
+      phone: s.phone || '', attendance: s.attendance || 0,
       cgpa: s.cgpa || 0,
     });
     setEditingId(s.id);
@@ -125,29 +142,31 @@ export default function AdminDashboard() {
   };
 
   const handleDelete = async (id: string) => {
-    const { error } = await supabase.from('students').delete().eq('id', id);
-    if (error) { toast({ title: 'Delete failed', description: error.message, variant: 'destructive' }); return; }
-    toast({ title: 'Student deleted' });
-    fetchStudents();
+    try {
+      await deleteDoc(doc(db, 'students', id));
+      toast({ title: 'Student deleted' });
+    } catch (error: any) {
+      toast({ title: 'Delete failed', description: error.message, variant: 'destructive' });
+    }
   };
 
   const handleLogout = () => { logout(); navigate('/'); };
 
   const analyticsData = [
-    { label: 'Total Students', value: students.length.toString(), change: '', color: 'text-primary' },
-    { label: 'Avg CGPA', value: students.length ? (students.reduce((a, s) => a + (s.cgpa || 0), 0) / students.length).toFixed(2) : '0', change: '', color: 'text-green-500' },
-    { label: 'Avg Attendance', value: students.length ? (students.reduce((a, s) => a + (s.attendance_percent || 0), 0) / students.length).toFixed(1) + '%' : '0%', change: '', color: 'text-amber-500' },
-    { label: 'Branches', value: new Set(students.map(s => s.branch)).size.toString(), change: '', color: 'text-purple-500' },
+    { label: 'Total Students', value: students.length.toString(), color: 'text-primary' },
+    { label: 'Avg CGPA', value: students.length ? (students.reduce((a, s) => a + (s.cgpa || 0), 0) / students.length).toFixed(2) : '0', color: 'text-green-500' },
+    { label: 'Avg Attendance', value: students.length ? (students.reduce((a, s) => a + (s.attendance || 0), 0) / students.length).toFixed(1) + '%' : '0%', color: 'text-amber-500' },
+    { label: 'Branches', value: new Set(students.map(s => s.branch)).size.toString(), color: 'text-purple-500' },
   ];
 
   const exportCSV = () => {
     const headers = ['Name', 'Roll Number', 'Branch', 'Year', 'Section', 'Category', 'Email', 'Phone', 'Attendance%', 'CGPA'];
-    const rows = students.map(s => [s.name, s.roll_number, s.branch, s.academic_year, s.section, s.category, s.email, s.phone, s.attendance_percent, s.cgpa]);
+    const rows = students.map(s => [s.name, s.rollNumber, s.branch, s.academicYear, s.section, s.category, s.email, s.phone, s.attendance, s.cgpa]);
     const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url; a.download = 'students.csv'; a.click();
+    a.href = url; a.download = 'students_export.csv'; a.click();
   };
 
   return (
@@ -170,11 +189,10 @@ export default function AdminDashboard() {
               <button
                 key={id}
                 onClick={() => { setActiveTab(id); setSidebarOpen(false); }}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
-                  activeTab === id
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${activeTab === id
                     ? 'bg-sidebar-primary text-sidebar-primary-foreground shadow-glow'
                     : 'text-sidebar-foreground hover:bg-sidebar-accent'
-                }`}
+                  }`}
               >
                 <Icon className="w-4 h-4" /> {label}
               </button>
@@ -267,7 +285,7 @@ export default function AdminDashboard() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {[
                     { key: 'name', label: 'Full Name', type: 'text' },
-                    { key: 'roll_number', label: 'Roll Number', type: 'text' },
+                    { key: 'rollNumber', label: 'Roll Number', type: 'text' },
                     { key: 'email', label: 'Email', type: 'email' },
                     { key: 'phone', label: 'Phone', type: 'tel' },
                   ].map(f => (
@@ -289,7 +307,7 @@ export default function AdminDashboard() {
                   </div>
                   <div>
                     <label className="block text-xs font-medium mb-1">Academic Year</label>
-                    <select value={form.academic_year} onChange={e => setForm(f => ({ ...f, academic_year: e.target.value }))} className="w-full px-3 py-2 rounded-xl bg-muted border border-border text-sm">
+                    <select value={form.academicYear} onChange={e => setForm(f => ({ ...f, academicYear: e.target.value }))} className="w-full px-3 py-2 rounded-xl bg-muted border border-border text-sm">
                       {years.map(y => <option key={y} value={y}>{y}</option>)}
                     </select>
                   </div>
@@ -307,7 +325,7 @@ export default function AdminDashboard() {
                   </div>
                   <div>
                     <label className="block text-xs font-medium mb-1">Attendance %</label>
-                    <input type="number" min={0} max={100} step={0.1} value={form.attendance_percent} onChange={e => setForm(f => ({ ...f, attendance_percent: Number(e.target.value) }))} className="w-full px-3 py-2 rounded-xl bg-muted border border-border text-sm" />
+                    <input type="number" min={0} max={100} step={0.1} value={form.attendance} onChange={e => setForm(f => ({ ...f, attendance: Number(e.target.value) }))} className="w-full px-3 py-2 rounded-xl bg-muted border border-border text-sm" />
                   </div>
                   <div>
                     <label className="block text-xs font-medium mb-1">CGPA</label>
@@ -324,7 +342,7 @@ export default function AdminDashboard() {
             {/* Students Table */}
             <div className="feature-card overflow-x-auto">
               {loadingStudents ? (
-                <div className="p-8 text-center text-muted-foreground">Loading...</div>
+                <div className="p-8 flex items-center justify-center text-muted-foreground"><Loader2 className="w-6 h-6 animate-spin mr-2" /> Loading Students...</div>
               ) : students.length === 0 ? (
                 <div className="p-8 text-center text-muted-foreground">
                   <Users className="w-12 h-12 mx-auto mb-3 opacity-30" />
@@ -342,14 +360,14 @@ export default function AdminDashboard() {
                   <tbody>
                     {students.map(s => (
                       <tr key={s.id} className="border-b border-border last:border-0 hover:bg-muted/50 transition-colors">
-                        <td className="px-4 py-3 font-mono text-xs text-primary">{s.roll_number}</td>
+                        <td className="px-4 py-3 font-mono text-xs text-primary">{s.rollNumber}</td>
                         <td className="px-4 py-3 font-medium">{s.name}</td>
                         <td className="px-4 py-3 text-muted-foreground">{s.branch}</td>
-                        <td className="px-4 py-3 text-muted-foreground text-xs">{s.academic_year}</td>
+                        <td className="px-4 py-3 text-muted-foreground text-xs">{s.academicYear}</td>
                         <td className="px-4 py-3 text-muted-foreground">{s.section}</td>
                         <td className="px-4 py-3">
-                          <span className={`text-xs font-medium ${(s.attendance_percent || 0) < 75 ? 'text-destructive' : 'text-green-500'}`}>
-                            {s.attendance_percent || 0}%
+                          <span className={`text-xs font-medium ${(s.attendance || 0) < 75 ? 'text-destructive' : 'text-green-500'}`}>
+                            {s.attendance || 0}%
                           </span>
                         </td>
                         <td className="px-4 py-3 font-semibold">{s.cgpa || 0}</td>
@@ -368,65 +386,15 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* Notices */}
-        {activeTab === 'notices' && (
-          <div className="space-y-6 animate-fade-in">
-            <div className="feature-card p-6">
-              <h3 className="font-semibold mb-5">Add New Notice</h3>
-              <div className="space-y-4">
-                <input type="text" placeholder="Notice title..." className="w-full px-4 py-3 rounded-xl bg-muted border border-border focus:border-primary outline-none text-sm" />
-                <textarea rows={3} placeholder="Notice content..." className="w-full px-4 py-3 rounded-xl bg-muted border border-border focus:border-primary outline-none text-sm resize-none" />
-                <div className="flex gap-3">
-                  <select className="px-4 py-3 rounded-xl bg-muted border border-border text-sm">
-                    <option>Academic</option><option>Placement</option><option>Events</option><option>Sports</option>
-                  </select>
-                  <button className="btn-primary text-sm px-5 py-3 flex items-center gap-2"><Plus className="w-4 h-4" /> Post Notice</button>
-                </div>
-              </div>
+        {/* Placeholder sections for the rest */}
+        {(activeTab === 'notices' || activeTab === 'applications' || activeTab === 'gallery' || activeTab === 'placements') && (
+          <div className="feature-card p-12 text-center animate-fade-in">
+            <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4 text-primary font-bold">
+              {activeTab.charAt(0).toUpperCase()}
             </div>
-          </div>
-        )}
-
-        {activeTab === 'applications' && (
-          <div className="feature-card animate-fade-in overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border">
-                  {['ID', 'Name', 'Department', 'Date', 'Status', 'Action'].map(h => (
-                    <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  { id: 'QISCET-4821', name: 'Arjun Sharma', dept: 'CSE', date: 'Feb 20', status: 'Pending' },
-                  { id: 'QISCET-4822', name: 'Priya Nair', dept: 'ECE', date: 'Feb 21', status: 'Approved' },
-                  { id: 'QISCET-4823', name: 'Rohan Patel', dept: 'MECH', date: 'Feb 22', status: 'Review' },
-                ].map(app => (
-                  <tr key={app.id} className="border-b border-border last:border-0 hover:bg-muted/50">
-                    <td className="px-4 py-3 font-mono text-xs text-primary">{app.id}</td>
-                    <td className="px-4 py-3 font-medium">{app.name}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{app.dept}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{app.date}</td>
-                    <td className="px-4 py-3">
-                      <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${app.status === 'Approved' ? 'bg-green-500/10 text-green-600' : app.status === 'Pending' ? 'bg-amber-500/10 text-amber-600' : 'bg-blue-500/10 text-blue-600'}`}>{app.status}</span>
-                    </td>
-                    <td className="px-4 py-3"><button className="text-xs text-primary hover:underline">View</button></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-
-        {(activeTab === 'gallery' || activeTab === 'placements') && (
-          <div className="feature-card p-8 text-center animate-fade-in">
-            <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-              {activeTab === 'gallery' ? <Image className="w-8 h-8 text-primary" /> : <TrendingUp className="w-8 h-8 text-primary" />}
-            </div>
-            <h3 className="font-grotesk font-bold text-xl mb-2 capitalize">{activeTab} Manager</h3>
-            <p className="text-muted-foreground text-sm mb-6">Upload and manage {activeTab} content here.</p>
-            <button className="btn-primary"><Plus className="w-4 h-4" /> Add Content</button>
+            <h3 className="font-grotesk font-bold text-xl mb-2 capitalize">{activeTab} Management</h3>
+            <p className="text-muted-foreground text-sm mb-6">This section is ready for real-time Firestore integration.</p>
+            <button className="btn-primary" onClick={() => toast({ title: 'Feature incoming', description: 'This module is under construction.' })}><Plus className="w-4 h-4" /> Add Item</button>
           </div>
         )}
       </main>

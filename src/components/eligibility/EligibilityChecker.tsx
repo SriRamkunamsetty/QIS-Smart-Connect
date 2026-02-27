@@ -1,18 +1,76 @@
-import { useState } from 'react';
-import { CheckCircle, XCircle, Lightbulb } from 'lucide-react';
-import { checkEligibility, type EligibilityResult } from './eligibilityRules';
+import { useState, useEffect } from 'react';
+import { CheckCircle, XCircle, Lightbulb, Loader2 } from 'lucide-react';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../../firebaseConfig';
+
+interface BranchRule {
+  id: string;
+  branchName: string;
+  eligibilityRules: {
+    minCGPA: number;
+    entranceCutoff: number;
+    requiredSubjects: string[];
+  };
+}
+
+interface EligibilityResult {
+  eligible: boolean;
+  department: string;
+  required: number;
+  score: number;
+  suggestions: string[];
+}
 
 export default function EligibilityChecker() {
   const [marks, setMarks] = useState('');
-  const [category, setCategory] = useState('General');
   const [branch, setBranch] = useState('cse');
+  const [rules, setRules] = useState<BranchRule[]>([]);
   const [result, setResult] = useState<EligibilityResult | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Fetch rules from Firestore admissions collection
+    const fetchRules = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, 'admissions'));
+        const fetchedRules = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        } as BranchRule));
+        setRules(fetchedRules);
+      } catch (error) {
+        console.error("Error fetching branch rules:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchRules();
+  }, []);
 
   const handleCheck = () => {
     const m = parseFloat(marks);
     if (isNaN(m) || m < 0 || m > 100) return;
-    setResult(checkEligibility(m, category, branch));
+
+    const selectedRule = rules.find(r => r.id === branch);
+    if (!selectedRule) return;
+
+    const required = selectedRule.eligibilityRules.minCGPA * 10; // Assuming minCGPA is on 10 pt scale
+    const isEligible = m >= required;
+
+    const suggestions = rules
+      .filter(r => m >= (r.eligibilityRules.minCGPA * 10) && r.id !== branch)
+      .map(r => r.branchName);
+
+    setResult({
+      eligible: isEligible,
+      department: selectedRule.branchName,
+      required: required,
+      score: m,
+      suggestions: suggestions
+    });
   };
+
+  if (loading) return <div className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="w-4 h-4 animate-spin" /> Loading rules...</div>;
 
   return (
     <div className="feature-card p-8 mt-12">
@@ -20,10 +78,10 @@ export default function EligibilityChecker() {
         Eligibility <span className="gradient-text">Checker</span>
       </h3>
       <p className="text-sm text-muted-foreground mb-6">
-        Check your eligibility based on your inter marks and category
+        Check your eligibility based on your inter marks (%) and desired branch
       </p>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
         <div>
           <label className="block text-sm font-medium mb-2">Inter Marks (%)</label>
           <input
@@ -37,28 +95,15 @@ export default function EligibilityChecker() {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-2">Category</label>
-          <select
-            value={category}
-            onChange={e => setCategory(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl bg-muted border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none text-sm"
-          >
-            {['General', 'OBC', 'SC', 'ST'].map(c => (
-              <option key={c} value={c}>{c}</option>
-            ))}
-          </select>
-        </div>
-        <div>
           <label className="block text-sm font-medium mb-2">Desired Branch</label>
           <select
             value={branch}
             onChange={e => setBranch(e.target.value)}
             className="w-full px-4 py-3 rounded-xl bg-muted border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none text-sm"
           >
-            <option value="cse">CSE</option>
-            <option value="ece">ECE</option>
-            <option value="mech">MECH</option>
-            <option value="civil">CIVIL</option>
+            {rules.map(r => (
+              <option key={r.id} value={r.id}>{r.branchName}</option>
+            ))}
           </select>
         </div>
       </div>
@@ -69,11 +114,10 @@ export default function EligibilityChecker() {
 
       {result && (
         <div
-          className={`rounded-2xl p-6 border-2 transition-all duration-500 animate-fade-in ${
-            result.eligible
+          className={`rounded-2xl p-6 border-2 transition-all duration-500 animate-fade-in ${result.eligible
               ? 'border-green-500/30 bg-green-500/5'
               : 'border-destructive/30 bg-destructive/5'
-          }`}
+            }`}
         >
           <div className="flex items-center gap-3 mb-3">
             {result.eligible ? (

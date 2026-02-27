@@ -10,6 +10,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ChatbotWidget from './components/ChatbotWidget';
 import ScrollToTop from './components/ScrollToTop';
+import RoleProtectedRoute from './components/auth/RoleProtectedRoute';
 
 const Home = lazy(() => import('./pages/Home'));
 const Contact = lazy(() => import('./pages/Contact'));
@@ -60,7 +61,7 @@ function PageLoader() {
         <div className="w-12 h-12 rounded-2xl bg-gradient-primary animate-pulse-glow flex items-center justify-center">
           <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
         </div>
-        <p className="text-sm text-muted-foreground">Loading...</p>
+        <p className="text-sm text-muted-foreground">Loading Ecosystem...</p>
       </div>
     </div>
   );
@@ -146,9 +147,34 @@ function MainLayout() {
             <Route path="/career-roadmap" element={<CareerRoadmap />} />
             <Route path="/placement-readiness" element={<PlacementReadinessScore />} />
             <Route path="/transport-tracker" element={<TransportTracker />} />
-            <Route path="/student-dashboard" element={<StudentDashboard />} />
-            <Route path="/admin-dashboard" element={<AdminDashboard />} />
-            <Route path="/faculty/dashboard" element={<FacultyDashboard />} />
+
+            {/* Protected Routes */}
+            <Route
+              path="/student-dashboard"
+              element={
+                <RoleProtectedRoute allowedRoles={['Student', 'Admin']}>
+                  <StudentDashboard />
+                </RoleProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin-dashboard"
+              element={
+                <RoleProtectedRoute allowedRoles={['Admin']}>
+                  <AdminDashboard />
+                </RoleProtectedRoute>
+              }
+            />
+            <Route
+              path="/faculty-dashboard"
+              element={
+                <RoleProtectedRoute allowedRoles={['Faculty', 'Admin']}>
+                  <FacultyDashboard />
+                </RoleProtectedRoute>
+              }
+            />
+            <Route path="/faculty/dashboard" element={<Navigate to="/faculty-dashboard" replace />} />
+
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
