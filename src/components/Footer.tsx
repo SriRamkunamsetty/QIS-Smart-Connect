@@ -89,7 +89,7 @@ export default function Footer() {
         {/* Bottom */}
         <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-xs text-muted-foreground">
-            © 2025 QIS College of Engineering and Technology. All rights reserved.
+            © 2026 QIS College of Engineering and Technology. All rights reserved.
           </p>
           <div className="flex items-center gap-2">
             {socials.map(({ icon: Icon, href, label }) => (

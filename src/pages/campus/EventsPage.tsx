@@ -1,11 +1,11 @@
 import { Calendar, MapPin, Users } from 'lucide-react';
 
 const events = [
-  { name: 'TechVista 2025', date: 'March 15-17, 2025', type: 'Tech Fest', desc: 'Annual technical festival with coding contests, hackathons, robotics challenges, and workshops.', attendees: '3000+', location: 'Main Campus' },
-  { name: 'Sargam 2025', date: 'April 5-6, 2025', type: 'Cultural Fest', desc: 'Cultural extravaganza featuring dance, music, drama, and art competitions.', attendees: '5000+', location: 'Open Air Theatre' },
-  { name: 'Industry Connect Summit', date: 'February 20, 2025', type: 'Seminar', desc: 'Industry leaders share insights on emerging technologies and career opportunities.', attendees: '800+', location: 'Auditorium' },
-  { name: 'National Level Hackathon', date: 'January 25-26, 2025', type: 'Competition', desc: '36-hour coding marathon with prizes worth ₹5 Lakhs. Open to all engineering colleges.', attendees: '500+', location: 'CS Block' },
-  { name: 'Alumni Meet 2025', date: 'May 10, 2025', type: 'Networking', desc: 'Annual reunion of QISCET alumni to strengthen industry-academia connections.', attendees: '1000+', location: 'Convention Hall' },
+  { name: 'TechVista 2026', date: 'March 15-17, 2026', type: 'Tech Fest', desc: 'Annual technical festival with coding contests, hackathons, robotics challenges, and workshops.', attendees: '3000+', location: 'Main Campus' },
+  { name: 'Sargam 2026', date: 'April 5-6, 2026', type: 'Cultural Fest', desc: 'Cultural extravaganza featuring dance, music, drama, and art competitions.', attendees: '5000+', location: 'Open Air Theatre' },
+  { name: 'Industry Connect Summit', date: 'February 20, 2026', type: 'Seminar', desc: 'Industry leaders share insights on emerging technologies and career opportunities.', attendees: '800+', location: 'Auditorium' },
+  { name: 'National Level Hackathon', date: 'January 25-26, 2026', type: 'Competition', desc: '36-hour coding marathon with prizes worth ₹5 Lakhs. Open to all engineering colleges.', attendees: '500+', location: 'CS Block' },
+  { name: 'Alumni Meet 2026', date: 'May 10, 2026', type: 'Networking', desc: 'Annual reunion of QISCET alumni to strengthen industry-academia connections.', attendees: '1000+', location: 'Convention Hall' },
   { name: 'Sports Meet', date: 'December 12-14, 2024', type: 'Sports', desc: 'Inter-department sports competition with 15+ events including athletics, cricket, and basketball.', attendees: '2000+', location: 'Sports Complex' },
 ];
 

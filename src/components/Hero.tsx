@@ -58,7 +58,7 @@ export default function Hero() {
             style={{ animationDelay: '0.3s' }}
           >
             <Link to="/admission" className="btn-primary text-base px-8 py-4">
-              Apply for 2025
+              Apply for 2026
               <ArrowRight className="w-5 h-5" />
             </Link>
             <Link to="/academics" className="btn-outline text-base px-8 py-4">
