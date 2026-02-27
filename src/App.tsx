@@ -35,6 +35,7 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 const AcademicsLayout = lazy(() => import('./pages/academics/AcademicsLayout'));
 const DepartmentsPage = lazy(() => import('./pages/academics/DepartmentsPage'));
 const FacultyPage = lazy(() => import('./pages/academics/FacultyPage'));
+const SDCPage = lazy(() => import('./pages/academics/SDCPage'));
 const ResearchPage = lazy(() => import('./pages/academics/ResearchPage'));
 const LibraryPage = lazy(() => import('./pages/academics/LibraryPage'));
 
@@ -106,6 +107,7 @@ function MainLayout() {
             {/* Academics nested */}
             <Route path="/academics" element={<AcademicsLayout />}>
               <Route index element={<DepartmentsPage />} />
+              <Route path="sdc" element={<SDCPage />} />
               <Route path="faculty" element={<FacultyPage />} />
               <Route path="research" element={<ResearchPage />} />
               <Route path="library" element={<LibraryPage />} />

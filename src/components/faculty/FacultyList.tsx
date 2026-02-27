@@ -2,16 +2,19 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Mail } from 'lucide-react';
 import { extendedFaculty } from '@/data/extendedData';
+import { Badge } from '@/components/ui/badge';
 
 export default function FacultyList() {
   const [filter, setFilter] = useState('all');
+  const [sdcOnly, setSDCOnly] = useState(false);
   const [search, setSearch] = useState('');
 
   const filtered = extendedFaculty.filter(f => {
     const matchDept = filter === 'all' || f.dept === filter;
     const matchSearch = f.name.toLowerCase().includes(search.toLowerCase()) ||
                         f.deptFull.toLowerCase().includes(search.toLowerCase());
-    return matchDept && matchSearch;
+    const matchSDC = !sdcOnly || f.isSDC;
+    return matchDept && matchSearch && matchSDC;
   });
 
   return (
@@ -46,6 +49,14 @@ export default function FacultyList() {
                 {d === 'all' ? 'All' : d.toUpperCase()}
               </button>
             ))}
+            <button
+              onClick={() => setSDCOnly(!sdcOnly)}
+              className={`px-4 py-2 rounded-xl text-xs font-medium transition-all ${
+                sdcOnly ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'
+              }`}
+            >
+              🎓 SDC
+            </button>
           </div>
         </div>
 
@@ -56,7 +67,10 @@ export default function FacultyList() {
               <div className="flex items-center gap-4">
                 <img src={f.image} alt={f.name} className="w-16 h-16 rounded-xl object-cover" />
                 <div>
-                  <h3 className="font-semibold text-sm group-hover:text-primary transition-colors">{f.name}</h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-semibold text-sm group-hover:text-primary transition-colors">{f.name}</h3>
+                    {f.isSDC && <Badge variant="secondary" className="text-[10px]">SDC Mentor</Badge>}
+                  </div>
                   <p className="text-xs text-primary mt-0.5">{f.role}</p>
                   <p className="text-xs text-muted-foreground">{f.deptFull}</p>
                 </div>
