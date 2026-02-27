@@ -1,34 +1,16 @@
 // Extended mock data for new modules
 
 export const departmentPlacementData = {
-  cse: {
-    name: 'CSE',
-    avgPackage: 10.2,
-    highestPackage: 42,
-    placementPct: 96,
-    companies: { IT: 45, Product: 25, Consulting: 15, Startup: 15 },
-  },
-  ece: {
-    name: 'ECE',
-    avgPackage: 8.5,
-    highestPackage: 28,
-    placementPct: 91,
-    companies: { IT: 30, Core: 35, Product: 20, Startup: 15 },
-  },
-  mech: {
-    name: 'MECH',
-    avgPackage: 6.8,
-    highestPackage: 18,
-    placementPct: 85,
-    companies: { Manufacturing: 40, IT: 25, Core: 25, Startup: 10 },
-  },
-  civil: {
-    name: 'CIVIL',
-    avgPackage: 5.5,
-    highestPackage: 14,
-    placementPct: 78,
-    companies: { Construction: 45, Government: 25, Consulting: 20, Startup: 10 },
-  },
+  cse: { name: 'CSE', avgPackage: 10.2, highestPackage: 42, placementPct: 92, companies: { IT: 45, Product: 25, Consulting: 15, Startup: 15 } },
+  csm: { name: 'CSM', avgPackage: 9.8, highestPackage: 38, placementPct: 89, companies: { IT: 40, Product: 30, Consulting: 15, Startup: 15 } },
+  csds: { name: 'CSDS', avgPackage: 11.0, highestPackage: 45, placementPct: 94, companies: { IT: 35, Product: 30, Consulting: 20, Startup: 15 } },
+  csbs: { name: 'CSBS', avgPackage: 8.2, highestPackage: 28, placementPct: 87, companies: { IT: 30, Consulting: 35, Product: 20, Startup: 15 } },
+  csit: { name: 'CSIT', avgPackage: 7.8, highestPackage: 25, placementPct: 85, companies: { IT: 50, Product: 20, Consulting: 15, Startup: 15 } },
+  csiot: { name: 'CSIOT', avgPackage: 7.2, highestPackage: 22, placementPct: 82, companies: { IT: 35, Core: 30, Product: 20, Startup: 15 } },
+  it: { name: 'IT', avgPackage: 6.8, highestPackage: 20, placementPct: 80, companies: { IT: 55, Product: 15, Consulting: 20, Startup: 10 } },
+  ece: { name: 'ECE', avgPackage: 8.5, highestPackage: 28, placementPct: 91, companies: { IT: 30, Core: 35, Product: 20, Startup: 15 } },
+  mech: { name: 'MECH', avgPackage: 6.8, highestPackage: 18, placementPct: 85, companies: { Manufacturing: 40, IT: 25, Core: 25, Startup: 10 } },
+  civil: { name: 'CIVIL', avgPackage: 5.5, highestPackage: 14, placementPct: 78, companies: { Construction: 45, Government: 25, Consulting: 20, Startup: 10 } },
 };
 
 export const hostelData = {
@@ -47,12 +29,17 @@ export const hostelData = {
 };
 
 export const extendedFaculty = [
-  { id: 1, name: 'Dr. Priya Sharma', role: 'Head of Department', dept: 'cse', deptFull: 'Computer Science & Engineering', experience: '18 yrs', image: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=200&h=200&fit=crop', qualifications: ['Ph.D. in Computer Science', 'M.Tech IIT Delhi'], publications: 42, subjects: ['Data Structures', 'Machine Learning', 'Cloud Computing'], officeHours: 'Mon-Fri, 10:00 AM - 12:00 PM', email: 'priya.sharma@qiscet.edu.in' },
-  { id: 2, name: 'Prof. Rajan Mehta', role: 'Professor', dept: 'ece', deptFull: 'Electronics & Communication', experience: '15 yrs', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop', qualifications: ['Ph.D. in VLSI Design', 'M.Tech NIT Trichy'], publications: 35, subjects: ['Digital Electronics', 'VLSI Design', 'Embedded Systems'], officeHours: 'Mon-Wed-Fri, 2:00 PM - 4:00 PM', email: 'rajan.mehta@qiscet.edu.in' },
-  { id: 3, name: 'Dr. Anita Patel', role: 'Associate Professor', dept: 'mech', deptFull: 'Mechanical Engineering', experience: '12 yrs', image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop', qualifications: ['Ph.D. in Thermal Engineering', 'M.Tech IISc'], publications: 28, subjects: ['Thermodynamics', 'Fluid Mechanics', 'CAD/CAM'], officeHours: 'Tue-Thu, 10:00 AM - 1:00 PM', email: 'anita.patel@qiscet.edu.in' },
-  { id: 4, name: 'Dr. Suresh Kumar', role: 'Head of Department', dept: 'civil', deptFull: 'Civil Engineering', experience: '20 yrs', image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop', qualifications: ['Ph.D. in Structural Engineering', 'M.Tech IIT Bombay'], publications: 55, subjects: ['Structural Analysis', 'Geotechnical Engineering', 'Urban Planning'], officeHours: 'Mon-Fri, 9:00 AM - 11:00 AM', email: 'suresh.kumar@qiscet.edu.in' },
-  { id: 5, name: 'Dr. Meena Iyer', role: 'Professor', dept: 'cse', deptFull: 'Computer Science & Engineering', experience: '14 yrs', image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&h=200&fit=crop', qualifications: ['Ph.D. in AI & ML', 'M.Tech IIIT Hyderabad'], publications: 38, subjects: ['Artificial Intelligence', 'Deep Learning', 'NLP'], officeHours: 'Tue-Thu, 3:00 PM - 5:00 PM', email: 'meena.iyer@qiscet.edu.in' },
-  { id: 6, name: 'Prof. Anil Deshmukh', role: 'Associate Professor', dept: 'ece', deptFull: 'Electronics & Communication', experience: '10 yrs', image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop', qualifications: ['Ph.D. in Signal Processing', 'M.Tech NIT Surathkal'], publications: 22, subjects: ['Signal Processing', 'Communication Systems', 'IoT'], officeHours: 'Mon-Wed, 11:00 AM - 1:00 PM', email: 'anil.deshmukh@qiscet.edu.in' },
+  { id: 1, name: 'Dr. Priya Sharma', role: 'Head of Department', dept: 'cse', branch: 'cse', deptFull: 'Computer Science & Engineering', experience: '18 yrs', image: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=200&h=200&fit=crop', qualifications: ['Ph.D. in Computer Science', 'M.Tech IIT Delhi'], publications: 42, subjects: ['Data Structures', 'Machine Learning', 'Cloud Computing'], officeHours: 'Mon-Fri, 10:00 AM - 12:00 PM', email: 'priya.sharma@qiscet.edu.in', isSDC: false },
+  { id: 2, name: 'Prof. Rajan Mehta', role: 'Professor', dept: 'ece', branch: 'ece', deptFull: 'Electronics & Communication', experience: '15 yrs', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop', qualifications: ['Ph.D. in VLSI Design', 'M.Tech NIT Trichy'], publications: 35, subjects: ['Digital Electronics', 'VLSI Design', 'Embedded Systems'], officeHours: 'Mon-Wed-Fri, 2:00 PM - 4:00 PM', email: 'rajan.mehta@qiscet.edu.in', isSDC: false },
+  { id: 3, name: 'Dr. Anita Patel', role: 'Associate Professor', dept: 'mech', branch: 'mech', deptFull: 'Mechanical Engineering', experience: '12 yrs', image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop', qualifications: ['Ph.D. in Thermal Engineering', 'M.Tech IISc'], publications: 28, subjects: ['Thermodynamics', 'Fluid Mechanics', 'CAD/CAM'], officeHours: 'Tue-Thu, 10:00 AM - 1:00 PM', email: 'anita.patel@qiscet.edu.in', isSDC: false },
+  { id: 4, name: 'Dr. Suresh Kumar', role: 'Head of Department', dept: 'civil', branch: 'civil', deptFull: 'Civil Engineering', experience: '20 yrs', image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop', qualifications: ['Ph.D. in Structural Engineering', 'M.Tech IIT Bombay'], publications: 55, subjects: ['Structural Analysis', 'Geotechnical Engineering', 'Urban Planning'], officeHours: 'Mon-Fri, 9:00 AM - 11:00 AM', email: 'suresh.kumar@qiscet.edu.in', isSDC: false },
+  { id: 5, name: 'Dr. Meena Iyer', role: 'Professor', dept: 'cse', branch: 'csm', deptFull: 'CSE – AI & Machine Learning', experience: '14 yrs', image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&h=200&fit=crop', qualifications: ['Ph.D. in AI & ML', 'M.Tech IIIT Hyderabad'], publications: 38, subjects: ['Artificial Intelligence', 'Deep Learning', 'NLP'], officeHours: 'Tue-Thu, 3:00 PM - 5:00 PM', email: 'meena.iyer@qiscet.edu.in', isSDC: false },
+  { id: 6, name: 'Prof. Anil Deshmukh', role: 'Associate Professor', dept: 'ece', branch: 'ece', deptFull: 'Electronics & Communication', experience: '10 yrs', image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop', qualifications: ['Ph.D. in Signal Processing', 'M.Tech NIT Surathkal'], publications: 22, subjects: ['Signal Processing', 'Communication Systems', 'IoT'], officeHours: 'Mon-Wed, 11:00 AM - 1:00 PM', email: 'anil.deshmukh@qiscet.edu.in', isSDC: false },
+  // SDC Faculty
+  { id: 101, name: 'Kanoj', role: 'Senior AI/ML Analyst', dept: 'cse', branch: 'csds', deptFull: 'CSE – Data Science (SDC)', experience: '8 yrs', image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop', qualifications: ['M.Tech AI', 'Google Certified'], publications: 12, subjects: ['React.js', 'Data Structures & Algorithms', 'Kotlin'], officeHours: 'Mon-Fri, 10:00 AM - 12:00 PM', email: 'kanoj@qiscet.edu.in', isSDC: true },
+  { id: 102, name: 'Siva Sai', role: 'SDC Mentor', dept: 'cse', branch: 'csds', deptFull: 'CSE – Data Science (SDC)', experience: '6 yrs', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop', qualifications: ['M.Tech Data Engineering'], publications: 8, subjects: ['Data Engineering'], officeHours: 'Tue-Thu, 2:00 PM - 4:00 PM', email: 'sivasai@qiscet.edu.in', isSDC: true },
+  { id: 103, name: 'Venu', role: 'SDC Mentor', dept: 'cse', branch: 'csds', deptFull: 'CSE – Data Science (SDC)', experience: '7 yrs', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop', qualifications: ['Ph.D. in Data Science'], publications: 15, subjects: ['Data Science'], officeHours: 'Mon-Wed, 3:00 PM - 5:00 PM', email: 'venu@qiscet.edu.in', isSDC: true },
+  { id: 104, name: 'Jeevan', role: 'SDC Mentor', dept: 'cse', branch: 'csds', deptFull: 'CSE – Data Science (SDC)', experience: '5 yrs', image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop', qualifications: ['M.Tech Mobile Computing'], publications: 6, subjects: ['Flutter App Development'], officeHours: 'Wed-Fri, 10:00 AM - 12:00 PM', email: 'jeevan@qiscet.edu.in', isSDC: true },
 ];
 
 export const internships = [

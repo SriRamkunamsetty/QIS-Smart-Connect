@@ -5,6 +5,57 @@ export const stats = [
   { label: 'Expert Faculty', value: 380, suffix: '+', icon: '👨‍🏫' },
 ];
 
+export const cseBranches = [
+  {
+    id: 'cse',
+    name: 'CSE (Core)',
+    fullName: 'Computer Science & Engineering',
+    courses: ['Data Structures', 'Algorithms', 'DBMS', 'Operating Systems', 'Computer Networks', 'Artificial Intelligence', 'Cloud Computing', 'Software Engineering'],
+    placementPct: 92,
+    sdcEligible: false,
+  },
+  {
+    id: 'csm',
+    name: 'CSM',
+    fullName: 'CSE – AI & Machine Learning',
+    courses: ['Machine Learning', 'Deep Learning', 'Computer Vision', 'Natural Language Processing', 'Neural Networks', 'Data Analytics'],
+    placementPct: 89,
+    sdcEligible: false,
+  },
+  {
+    id: 'csds',
+    name: 'CSDS',
+    fullName: 'CSE – Data Science',
+    courses: ['Python Programming', 'Data Mining', 'Big Data Analytics', 'Statistics for Data Science', 'Data Visualization', 'Data Engineering', 'AI Fundamentals'],
+    placementPct: 94,
+    sdcEligible: true,
+  },
+  {
+    id: 'csbs',
+    name: 'CSBS',
+    fullName: 'CSE – Business Systems',
+    courses: ['Business Analytics', 'Financial Computing', 'ERP Systems', 'Digital Marketing Analytics', 'Operations Research'],
+    placementPct: 87,
+    sdcEligible: false,
+  },
+  {
+    id: 'csit',
+    name: 'CSIT',
+    fullName: 'CSE – Information Technology',
+    courses: ['Web Technologies', 'Cyber Security', 'Mobile App Development', 'Cloud Infrastructure', 'IoT Systems'],
+    placementPct: 85,
+    sdcEligible: false,
+  },
+  {
+    id: 'csiot',
+    name: 'CSIOT',
+    fullName: 'CSE – Internet of Things',
+    courses: ['IoT Architecture', 'Embedded Systems', 'Sensor Networks', 'Edge Computing', 'Robotics Basics'],
+    placementPct: 82,
+    sdcEligible: false,
+  },
+];
+
 export const departments = [
   {
     id: 'cse',
@@ -12,10 +63,11 @@ export const departments = [
     shortName: 'CSE',
     icon: '💻',
     color: 'from-blue-500 to-cyan-500',
-    description: 'Cutting-edge programs in AI, ML, Web Development, and Cloud Computing.',
-    courses: ['B.Tech CSE', 'M.Tech CSE', 'B.Tech AI & ML', 'MCA'],
+    description: 'Cutting-edge programs in AI, ML, Web Development, and Cloud Computing. Includes specialized branches: CSM, CSDS, CSBS, CSIT, and CSIOT.',
+    courses: ['B.Tech CSE', 'B.Tech CSM (AI & ML)', 'B.Tech CSDS (Data Science)', 'B.Tech CSBS (Business Systems)', 'B.Tech CSIT', 'B.Tech CSIOT', 'M.Tech CSE', 'MCA'],
     faculty: 45,
     students: 2800,
+    branches: cseBranches,
   },
   {
     id: 'ece',
@@ -27,6 +79,19 @@ export const departments = [
     courses: ['B.Tech ECE', 'M.Tech VLSI', 'B.Tech IoT'],
     faculty: 38,
     students: 2200,
+  },
+  {
+    id: 'it',
+    name: 'Information Technology',
+    shortName: 'IT',
+    icon: '🌐',
+    color: 'from-teal-500 to-emerald-500',
+    description: 'Web Development, Network Security, Database Systems, and DevOps.',
+    courses: ['B.Tech IT'],
+    faculty: 25,
+    students: 1200,
+    itCourses: ['Web Development', 'Network Security', 'Database Systems', 'Software Testing', 'DevOps'],
+    placementPct: 80,
   },
   {
     id: 'mech',
@@ -52,11 +117,18 @@ export const departments = [
   },
 ];
 
+export const sdcFaculty = [
+  { id: 101, name: 'Kanoj', role: 'Senior AI/ML Analyst', dept: 'cse', branch: 'csds', isSDC: true, subjects: ['React.js', 'Data Structures & Algorithms', 'Kotlin'], image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop', experience: '8 yrs' },
+  { id: 102, name: 'Siva Sai', role: 'SDC Mentor', dept: 'cse', branch: 'csds', isSDC: true, subjects: ['Data Engineering'], image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop', experience: '6 yrs' },
+  { id: 103, name: 'Venu', role: 'SDC Mentor', dept: 'cse', branch: 'csds', isSDC: true, subjects: ['Data Science'], image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop', experience: '7 yrs' },
+  { id: 104, name: 'Jeevan', role: 'SDC Mentor', dept: 'cse', branch: 'csds', isSDC: true, subjects: ['Flutter App Development'], image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop', experience: '5 yrs' },
+];
+
 export const faculty = [
-  { id: 1, name: 'Dr. Priya Sharma', role: 'Head of CSE', dept: 'cse', experience: '18 yrs', image: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=200&h=200&fit=crop' },
-  { id: 2, name: 'Prof. Rajan Mehta', role: 'Professor ECE', dept: 'ece', experience: '15 yrs', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop' },
-  { id: 3, name: 'Dr. Anita Patel', role: 'Associate Prof. MECH', dept: 'mech', experience: '12 yrs', image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop' },
-  { id: 4, name: 'Dr. Suresh Kumar', role: 'Head of CIVIL', dept: 'civil', experience: '20 yrs', image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop' },
+  { id: 1, name: 'Dr. Priya Sharma', role: 'Head of CSE', dept: 'cse', experience: '18 yrs', image: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=200&h=200&fit=crop', isSDC: false },
+  { id: 2, name: 'Prof. Rajan Mehta', role: 'Professor ECE', dept: 'ece', experience: '15 yrs', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop', isSDC: false },
+  { id: 3, name: 'Dr. Anita Patel', role: 'Associate Prof. MECH', dept: 'mech', experience: '12 yrs', image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop', isSDC: false },
+  { id: 4, name: 'Dr. Suresh Kumar', role: 'Head of CIVIL', dept: 'civil', experience: '20 yrs', image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop', isSDC: false },
 ];
 
 export const companies = [

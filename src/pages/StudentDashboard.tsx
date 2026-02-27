@@ -29,7 +29,7 @@ export default function StudentDashboard() {
           <div className="relative z-10">
             <p className="text-sm text-muted-foreground mb-1">Welcome back 👋</p>
             <h1 className="font-grotesk font-bold text-3xl mb-2">{user?.name || 'Student'}</h1>
-            <p className="text-muted-foreground text-sm">Application ID: <span className="text-primary font-mono font-semibold">QISCET-2025-4821</span></p>
+            <p className="text-muted-foreground text-sm">Application ID: <span className="text-primary font-mono font-semibold">QISCET-2026-4821</span></p>
           </div>
         </div>
 
@@ -84,7 +84,7 @@ export default function StudentDashboard() {
                 <span className="text-amber-500 font-medium flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> Pending</span>
               </div>
               <div className="pt-3 border-t border-border">
-                <p className="text-xs text-muted-foreground mb-2">Due by March 15, 2025</p>
+                <p className="text-xs text-muted-foreground mb-2">Due by March 15, 2026</p>
                 <button className="btn-primary text-xs w-full justify-center py-2.5">Pay Now</button>
               </div>
             </div>
@@ -121,8 +121,8 @@ export default function StudentDashboard() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
-                { name: 'TechFest 2025', date: 'Mar 5-7', type: 'Technical', color: 'bg-blue-500/10 text-blue-600' },
-                { name: 'Hackathon 2025', date: 'Mar 15', type: 'Coding', color: 'bg-green-500/10 text-green-600' },
+                { name: 'TechFest 2026', date: 'Mar 5-7', type: 'Technical', color: 'bg-blue-500/10 text-blue-600' },
+                { name: 'Hackathon 2026', date: 'Mar 15', type: 'Coding', color: 'bg-green-500/10 text-green-600' },
                 { name: 'Sports Meet', date: 'Mar 22', type: 'Sports', color: 'bg-orange-500/10 text-orange-600' },
               ].map(ev => (
                 <div key={ev.name} className="flex items-center gap-3 p-3 rounded-xl bg-muted">

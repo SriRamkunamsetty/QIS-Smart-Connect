@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { departments, faculty } from '../data/dummyData';
+import { departments, faculty, sdcFaculty } from '../data/dummyData';
 import { Download, ChevronDown, ChevronUp, Users, BookOpen } from 'lucide-react';
 
 export default function Academics() {

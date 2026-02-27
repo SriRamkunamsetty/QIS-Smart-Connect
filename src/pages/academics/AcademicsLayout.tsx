@@ -1,9 +1,10 @@
 import { NavLink, Outlet } from 'react-router-dom';
-import { BookOpen, Users, FlaskConical, Library } from 'lucide-react';
+import { BookOpen, Users, FlaskConical, Library, Lightbulb } from 'lucide-react';
 import Breadcrumb from '@/components/Breadcrumb';
 
 const tabs = [
   { label: 'Departments', path: '/academics', icon: BookOpen, end: true },
+  { label: 'SDC', path: '/academics/sdc', icon: Lightbulb },
   { label: 'Faculty', path: '/academics/faculty', icon: Users },
   { label: 'Research', path: '/academics/research', icon: FlaskConical },
   { label: 'Library', path: '/academics/library', icon: Library },
